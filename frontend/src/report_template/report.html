@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ reportData.companyName }} - Profil d'Entreprise</title>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <!-- GSAP for animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header id="page-header">
+    <div class="header-bg"></div>
+    <div class="header-pattern"></div>
+    <div class="container">
+      <div class="header-content">
+        <h1>{{ reportData.companyName }}</h1>
+        <div class="header-stats">
+          <!-- <div class="header-stat"><h3>{{ reportData.financialData.revenue["2023"] }}</h3><p>Chiffre d'Affaires (2023)</p></div> -->
+          <div class="header-stat"><h3 id="revenue-N-cell"></h3><p>Chiffre d'Affaires (N)</p></div>
+          <div class="header-stat"><h3 id="netmargin-2023-cell"></h3><p>Marge Nette (N)</p></div>
+          <!-- <div class="header-stat"><h3>{{ reportData.companyOverview.companyFoundationyear }}</h3><p>Année de Fondation</p></div> -->
+        </div>
+        <p>{{ reportData.companyOverview.companyDefinition }}</p>
+
+        <!-- Company Overview Section -->
+        <div class="header-overview">
+          <!-- First row: Secteur Principal and Forme Juridique inline -->
+          <div class="overview-row">
+            <div class="overview-bullet-item">
+              <i class="fas fa-industry" style="color: white; margin-right: 8px;"></i>
+              <span><strong>Secteur Principal:</strong> {{ reportData.companyOverview.primary_sector }}</span>
+            </div>
+            <div class="overview-bullet-item">
+              <i class="far fa-building" style="color: white; margin-right: 8px;"></i>
+              <span><strong>Forme Juridique:</strong> {{ reportData.companyOverview.legal_form }}</span>
+            </div>
+          </div>
+          
+          <!-- Second row: Fondée en and Effectif inline -->
+          <div class="overview-row">
+            <div class="overview-bullet-item">
+              <i class="far fa-calendar-alt" style="color: white; margin-right: 8px;"></i>
+              <span><strong>Fondée en:</strong> {{ reportData.companyOverview.companyFoundationyear }}</span>
+            </div>
+            <div class="overview-bullet-item">
+              <i class="fas fa-user-friends" style="color: white; margin-right: 8px;"></i>
+              <span><strong>Effectif:</strong> {{ reportData.companyOverview.staff_count }}</span>
+            </div>
+          </div>
+          
+          <!-- Third row: Siège Social (full width) -->
+          <div class="overview-row">
+            <div class="overview-bullet-item full-width">
+              <i class="fas fa-map-marked-alt" style="color: white; margin-right: 8px;"></i>
+              <span><strong>Siège Social:</strong> {{ reportData.contact.address }}</span>
+            </div>
+          </div>
+          
+          <!-- Fourth row: Dirigeants (compact) -->
+          <div class="overview-row">
+            <div class="overview-bullet-item full-width">
+              <i class="fas fa-users" style="color: white; margin-right: 8px;"></i>
+              <span><strong>Dirigeants:</strong></span>
+              <div class="key-people-compact" id="key-people-container">
+                <!-- Key people will be populated by JavaScript -->
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </header>
+
+  <nav class="sticky-nav" id="sticky-navigation">
+    <div class="container">
+      <div class="nav-content">
+        <div class="nav-brand">{{ reportData.companyName }}</div>
+        <div class="nav-sections">
+          <a href="#company-overview">Aperçu</a>
+          <a href="#financials">Finances</a>
+          <a href="#strategic-analysis">Stratégie</a>
+          <a href="#recommendations">Recommandations</a>
+          <a href="#news">Actualités</a>
+          <a href="#contact">Contact</a> <!-- Optional: Add nav link if desired -->
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content">
+    <div class="container">
+
+      <!-- <section id="key-people" class="key-people">
+        <h2 class="section-title">Dirigeants</h2>
+        <div class="card">
+          {% for person in reportData.keyPeople %}
+          <div class="person-item">
+            <div class="person-avatar">{{ person.initials }}</div>
+            <div class="person-info">
+              <h4>{{ person.name }}</h4>
+              <p>{{ person.position }}</p>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </section> -->
+
+      
+      <!-- <section id="activity-sectors" class="activity-sectors">
+        <h2 class="section-title">Secteurs d'Activité Détaillés</h2>
+        <div class="info-card-grid">
+            {% for sector in reportData.sectors %}
+            <div class="info-card">
+                <div class="icon"><i class="fas fa-signal"></i></div>
+                <h4>{{ sector.title }}</h4>
+                <p>{{ sector.description }}</p>
+            </div>
+            {% endfor %}
+        </div>
+      </section>
+      
+      <section id="markets" class="markets">
+        <h2 class="section-title">Marchés & Clients Cibles</h2>
+        <div class="info-card-grid">
+          {% for market in reportData.markets %}
+          <div class="info-card">
+            <div class="icon"><i class="fas fa-landmark"></i></div>
+            <h4>{{ market.title }}</h4>
+            <p>{{ market.description }}</p>
+          </div>
+          {% endfor %}
+        </div>
+      </section> -->
+
+      <section id="financials" class="financials">
+        <h2 class="section-title">Diagnostic Financier</h2>
+        <div class="card">
+          <table class="financial-table">
+            <thead><tr><th>Indicateur Clé</th><th>N (MAD)</th><th>N-1 (MAD)</th><th>CAGR (N)</th></tr></thead>
+            <tbody>
+              <!-- Table content will be generated dynamically by JavaScript -->
+
+
+
+
+
+            </tbody>
+          </table>
+          
+          <!-- Dynamic Financial Insights Paragraph -->
+          <!-- <div class="financial-insights" style="margin: 2rem 0; padding: 1.5rem; background: rgba(40, 167, 69, 0.05); border-radius: 8px; border-left: 4px solid #28a745;">
+            <h4 style="color: #28a745; margin-bottom: 1rem; font-size: 1.1rem;">
+              <i class="fas fa-chart-line" style="margin-right: 8px;"></i>Analyse de Performance
+            </h4>
+            <div class="financial-insights-content" style="line-height: 1.6; color: var(--text-dark);">
+              <p id="financial-insights-text">
+                 Dynamic content will be populated by JavaScript -->
+              <!-- </p>
+            </div>
+          </div> -->
+          
+          <div class="chart-container">
+            <h3 class="chart-title">Chiffre d'Affaires et Marge EBITDA</h3>
+            <div class="chart-canvas-container"><canvas id="revenueChart"></canvas></div>
+          </div>
+          <div class="chart-container">
+            <h3 class="chart-title">EBITDA & Dette Nette</h3>
+            <div class="chart-canvas-container"><canvas id="ebtDebtChart"></canvas></div>
+          </div>
+          <div class="financial-conclusion">
+            <!-- <h3 class="chart-title">Conclusion d'Analyse Financière</h3> -->
+
+            
+                      <!-- Detailed Analysis Section -->
+          <!-- <div class="detailed-analysis-section" style="margin-top: 2rem; padding: 1.5rem; background: rgba(0,123,255,0.05); border-radius: 8px; border-left: 4px solid var(--primary);">
+            <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1.1rem;">
+              <i class="fas fa-chart-bar" style="margin-right: 8px;"></i>Analyse Financière Détaillée
+            </h4>
+            <div class="detailed-analysis-content" style="line-height: 1.6; color: var(--text-dark);">
+              {{ reportData.detailedAnalysis }}
+            </div>
+          </div> -->
+          </div>
+        </div>
+      </section>
+
+
+      <section id="leverage-analysis" class="leverage-analysis">
+        <h2 class="section-title">Structure Financière</h2>
+        <div class="card">
+          <div class="chart-container">
+            <h3 class="chart-title">Structure Financière (Dette Nette vs Capitaux Propres)</h3>
+            <div class="chart-canvas-container"><canvas id="gearingChart"></canvas></div>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <span id="gearin" class="metric-value">{{ reportData.financialData.metrics.gearing }}</span>
+              <span class="metric-label">Gearing (N)</span>
+            </div>
+            <div class="metric-card">
+              <span data-key="ratio_debt_equity" class="metric-value"></span>
+              <span class="metric-label">Capacité de remboursement (Dette/EBITDA) (N)</span>
+            </div>
+            <div class="metric-card">
+              <span data-key="ratio_liquidite_generale" class="metric-value"></span>
+              <span class="metric-label">Ratio de liquidité générale (N)</span>
+            </div>
+            <div class="metric-card">
+              <span id="tresorerie-nette" class="metric-value"></span>
+              <span class="metric-label">Trésorerie Nette (N)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="kpis" class="kpis">
+        <h2 class="section-title">Analyse de Rentabilité</h2>
+        <div class="card">
+          <div class="metrics-grid">
+            <div class="metric-card"><span id="operatingmargin" class="metric-value"></span><span class="metric-label">Marge Opérationnelle (N)</span></div>
+            <div class="metric-card"><span id="rotation_actifs" class="metric-value"></span><span class="metric-label">Rotation des Actifs (N)</span></div>
+            <div class="metric-card"><span id="netmargin" class="metric-value"></span><span class="metric-label">Marge Nette (N)</span></div>
+            <div class="metric-card"><span id="roe" class="metric-value"></span><span class="metric-label">ROE (N)</span></div>
+            <div class="metric-card"><span id="roce" class="metric-value"></span><span class="metric-label">ROCE (N)</span></div>
+            
+          </div>
+          <div class="chart-container"><h3 class="chart-title">Radar des Métriques Financières (N)</h3><div class="chart-canvas-container"><canvas id="metricsChart"></canvas></div></div>
+          
+          <!-- Financial Structure Analysis - LLM Generated -->
+          <div class="profitability-insights" style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 12px; border-left: 4px solid var(--primary);">
+            <h4 style="margin: 0 0 1rem 0; color: var(--primary); font-size: 1.1rem; display: flex; align-items: center;">
+              <i class="fas fa-chart-line" style="margin-right: 8px;"></i>Analyse de Solvabilité & Rentabilité
+            </h4>
+            <div class="financial-structure-analysis" style="line-height: 1.6; color: var(--text-primary); text-align: justify;">
+              {{ reportData.detailed_analysis }}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="news" class="news">
+        <h2 class="section-title">Actualités Clés</h2>
+        <div class="news-container">
+          <div class="news-header"><div class="news-badge"><i class="fas fa-newspaper"></i></div><h3>Veille Concurrentielle</h3></div>
+          <div class="news-content" id="news-content" style="text-align: justify;">{{ reportData.news }}</div>
+          
+          <!-- News URLs will be dynamically populated by JavaScript -->
+          <div id="news-sources" class="news-sources" style="display: none;">
+            <h4 style="margin-top: 2rem; margin-bottom: 1rem; color: var(--primary); font-size: 1.1rem;">
+              <i class="fas fa-newspaper" style="margin-right: 8px;"></i>Top Actualités
+            </h4>
+            <div id="news-urls-grid" class="news-urls-grid">
+              <!-- Top 10 news articles will be inserted here by JavaScript -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="strategic-analysis" class="strategic-analysis">
+        <h2 class="section-title">Analyse Stratégique (SWOT)</h2>
+        <div class="strategic-grid">
+          <div class="strategic-card strengths">
+            <div class="strategic-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Forces</h3>
+            <ul class="strategic-list" id="strength-list"></ul>
+        </div>
+        <div class="strategic-card risks" >
+            <div class="strategic-icon">
+                <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3>Faiblesses</h3>
+            <ul class="strategic-list" id="risk-list"></ul>
+        </div>
+        <div class="strategic-card opportunities">
+            <div class="strategic-icon">
+                <i class="far fa-lightbulb"></i>
+            </div>
+            <h3>Opportunités</h3>
+            <ul class="strategic-list" id="opportunity-list"></ul>
+        </div>
+        <div class="strategic-card threats">
+            <div class="strategic-icon">
+                <i class="fas fa-skull-crossbones"></i>
+            </div>
+            <h3>Menaces</h3>
+                <ul class="strategic-list" id="threat-list"></ul>
+        </div>
+        </div>
+      </section>
+
+      <section id="recommendations" class="recommendations">
+        <h2 class="section-title">Synthèse & Recommandations Clés</h2>
+        <div class="recommendation-container">
+          <div class="recommendation-header"><div class="recommendation-badge"><i class="fas fa-thumbs-up"></i></div><h3>Notre Recommandation Stratégique</h3></div>
+          <div class="recommendation-content" style="text-align: justify;"><p>{{ reportData.recommendation }}</p></div>
+        </div>
+      </section>
+
+      <section id="contact" class="contact">
+        <h2 class="section-title">Informations de Contact</h2>
+        <div class="contact-grid">
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+            <h4>Téléphone</h4>
+            <p>{{ reportData.contact.phone }}</p>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+            <h4>Email</h4>
+            <p>{{ reportData.contact.email }}</p>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <h4>Adresse</h4>
+            <p>{{ reportData.contact.address }}</p>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon"><i class="fas fa-globe"></i></div>
+            <h4>Site Web</h4>
+            <p>{{ reportData.contact.website }}</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="notes" class="notes">
+        <h2 class="section-title">Notes & Avertissements</h2>
+        <div class="notes-section"><div class="notes-content">Les informations présentées dans ce profil d'entreprise sont générées à l'aide d'outils d'intelligence artificielle et reposent sur les données disponibles au moment de l'analyse. Leur exactitude peut dépendre de la qualité des documents fournis, à savoir des documents PDF lisibles, en bonne résolution et permettant l'extraction de texte. Ce rapport ne constitue pas un conseil juridique, financier ou commercial et n'engage pas la responsabilité de son auteur. L'utilisateur demeure seul responsable de l'interprétation et de l'utilisation des informations qui y figurent.</div></div>
+      </section>
+    </div> 
+  </main> 
+
+  <footer id="page-footer">
+    <div class="wave-top"><svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" class="shape-fill"></path></svg></div>
+    <div class="container">
+      <div class="footer-main"><p class="footer-text">Profil d'entreprise {{ companyName }} <span class="footer-highlight">© <script>document.write(new Date().getFullYear())</script></span>.<br>Analyse et conception par Granit AI.</p></div>
+      <div class="footer-tags"><span class="footer-tag">Construction</span><span class="footer-tag">Télécommunications</span><span class="footer-tag">Réseaux Électriques</span><span class="footer-tag">Innovation</span><span class="footer-tag">Granit AI</span></div>
+    </div>
+  </footer>
+
+<!-- <script>
+  const reportData = {{ reportData | tojson }};
+</script> -->
+<script id="report-data" type="application/json">
+  {{ reportData | tojson }}
+</script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
