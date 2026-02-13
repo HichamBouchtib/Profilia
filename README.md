@@ -2,7 +2,7 @@
 
 A streamlined document analysis platform designed specifically for chartered accountants to process and analyze financial documents. The system provides automated document processing, KPI extraction, and comprehensive financial reporting.
 
-![Chartered Accountant Agent](officialpage.png)
+<img width="1034" height="567" alt="image" src="https://github.com/user-attachments/assets/adf09228-5c75-40fd-be8e-a7b4b4c74aad" />
 
 ## 🚀 Features
 
